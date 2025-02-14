@@ -3,6 +3,7 @@ package com.br.mssankhyaorder.application.service;
 import com.br.mssankhyaorder.application.dto.OrderRequest;
 import com.br.mssankhyaorder.application.dto.OrderResponse;
 import com.br.mssankhyaorder.application.mapper.OrderMapper;
+import com.br.mssankhyaorder.application.producer.OrderProducer;
 import com.br.mssankhyaorder.domain.repository.CustomerRepository;
 import com.br.mssankhyaorder.domain.repository.OrderRepository;
 import com.br.mssankhyaorder.domain.repository.ProductRepository;
@@ -26,6 +27,8 @@ public class OrderService {
 
     private final OrderMapper orderMapper;
 
+    private final OrderProducer orderProducer;
+
     public OrderResponse createOrder(OrderRequest orderRequest) {
         var order = orderMapper.toEntity(orderRequest);
 
@@ -42,6 +45,8 @@ public class OrderService {
         order.setSaleDate(orderRequest.getSaleDate());
 
         var savedOrder = orderRepository.save(order);
+
+        orderProducer.sendOrderMessage("Pedido criado: " + savedOrder.getId());
         return orderMapper.toResponse(savedOrder);
     }
 
