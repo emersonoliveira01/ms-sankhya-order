@@ -1,9 +1,11 @@
 package com.br.mssankhyaorder.domain.model;
 
+import com.br.mssankhyaorder.domain.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -17,11 +19,16 @@ public class Order {
     @ManyToOne
     private Customer customer;
 
-    @ManyToOne
-    private Product product;
-
-    private int quantity;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderProduct> products;
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime saleDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime dateUpdateStatus;
 }
